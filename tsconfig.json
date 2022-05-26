@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "jsxImportSource": "preact",
+    "strictNullChecks": true,
+    "target": "es2017",
+    "types": [ "node"],
+    "module": "esnext",
+    "noEmit": true
+  },
+  "include": ["src/*"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
