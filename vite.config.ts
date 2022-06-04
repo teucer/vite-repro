@@ -19,7 +19,7 @@ export default defineConfig({
             fileName: (format) => `myapp.${format}.js`,
         },
         rollupOptions: {
-            external: ["preact", "preact-render-to-string"],
+            external: ["preact/jsx-runtime", "preact-render-to-string"],
         },
     },
 });

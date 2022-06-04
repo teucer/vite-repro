@@ -1,7 +1,42 @@
-import render from "preact-render-to-string";
+import { useEffect, useRef, useState } from "preact/hooks"
 
-import "./index.css"
+import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup"
+import { markdown } from "@codemirror/lang-markdown"
+import { ViewUpdate } from "@codemirror/view"
 
-const vdom = <div class="foo">content</div>;
+import { basicLight } from "./theme"
 
-export const html = render(vdom);
+type EditorProps = {
+  value: string;
+}
+
+
+export function Editor(props: EditorProps) {
+  const editor = useRef<HTMLDivElement>(null)
+  const [value, setValue] = useState("")
+
+  useEffect(() => console.log(value, editor.current), [value])
+
+  useEffect(() => {
+    new EditorView({
+      state: EditorState.create({
+        doc: props.value,
+        extensions: [
+          basicSetup, 
+          basicLight,
+          markdown(),
+          EditorView.updateListener.of((v: ViewUpdate) => {
+            if (v.docChanged) {
+              setValue(v.view.state.doc.toString())
+            }
+          })
+        ]
+      }),
+      parent: editor.current ?? document.body
+    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <div ref={editor} id="editor" />
+}
