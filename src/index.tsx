@@ -5,6 +5,7 @@ import { markdown } from "@codemirror/lang-markdown"
 import { ViewUpdate } from "@codemirror/view"
 
 import { basicLight } from "./theme"
+import { Yaml } from "./extension"
 
 type EditorProps = {
   value: string;
@@ -22,9 +23,9 @@ export function Editor(props: EditorProps) {
       state: EditorState.create({
         doc: props.value,
         extensions: [
-          basicSetup, 
+          basicSetup,
           basicLight,
-          markdown(),
+          markdown({ extensions: Yaml }),
           EditorView.updateListener.of((v: ViewUpdate) => {
             if (v.docChanged) {
               setValue(v.view.state.doc.toString())

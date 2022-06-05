@@ -1,7 +1,7 @@
 import { EditorView } from "@codemirror/view"
 import { Extension } from "@codemirror/state"
-import {tags as t} from "@lezer/highlight"
-import {HighlightStyle, syntaxHighlighting} from "@codemirror/language"
+import { tags as t } from "@lezer/highlight"
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
 
 // Colors from https://www.nordtheme.com/docs/colors-and-palettes
 // Polar Night
