@@ -1,51 +1,64 @@
+import { tags as t } from "@lezer/highlight";
+import { MarkdownConfig, LeafBlockParser, BlockContext, LeafBlock } from "@lezer/markdown";
 
-import { tags as t } from "@lezer/highlight"
-import { MarkdownConfig, LeafBlockParser, BlockContext, LeafBlock } from "@lezer/markdown"
+const regex =
+  /^\s*(?:[,[\]{}&*!|>'"%@`][^\s'":]|[^,[\]{}#&*!|>'"%@`])[^#]*?(?=\s*:($|\s((?:>-?|\|-?))?))/;
 
+class YamlKeyParser implements LeafBlockParser {
+  match: RegExpExecArray;
 
-// eslint-disable-next-line no-useless-escape
-const regex = /^\s*(?:[,\[\]{}&*!|>'"%@`][^\s'":]|[^,\[\]{}#&*!|>'"%@`])[^#]*?(?=\s*:($|\s))/
+  constructor(match: RegExpExecArray) {
+    this.match = match;
+  }
 
-class YamlParser implements LeafBlockParser {
-    nextLine() { return false }
+  nextLine() {
+    return false;
+  }
 
-    finish(cx: BlockContext, leaf: LeafBlock) {
-        const match = regex.exec(leaf.content) ?? []
-        let offset = 0
-        if (match.length > 0) {
-            offset = match[0].length
-        }
-        cx.addLeafElement(leaf,
-            cx.elt(
-                "Yaml",
-                leaf.start,
-                leaf.start + leaf.content.length,
-                [
-                    cx.elt("KeyMarker",
-                        leaf.start,
-                        leaf.start + offset
-                    ),
-                    ...cx.parser.parseInline(
-                        leaf.content.slice(offset),
-                        leaf.start + offset
-                    )
-                ]
-            )
-        )
-        return true
+  finish(cx: BlockContext, leaf: LeafBlock) {
+    const content = leaf.content;
+    let offset = this.match[0].length;
+    let start = leaf.start;
+    let end = start + offset;
+    const markers = [cx.elt("YamlKey", start, end)];
+    if (this.match.length > 2) {
+      offset += this.match[1].length + 1;
+      start = end;
+      end += this.match[1].length + 1;
+      markers.push(cx.elt("YamlOperator", start, end));
     }
+    console.log(leaf);
+    cx.addLeafElement(
+      leaf,
+      cx.elt("Yaml", start, start + content.length, [
+        ...markers,
+        ...cx.parser.parseInline(content.slice(offset), end)
+      ])
+    );
+    return true;
+  }
 }
 
-
-export const Yaml: MarkdownConfig = {
-    defineNodes: [
-        { name: "Yaml", block: true, style: t.list },
-        { name: "KeyMarker", style: t.atom }
-    ],
-    parseBlock: [{
-        name: "YamlKeyValue",
-        leaf(cx, leaf) {
-            return regex.test(leaf.content) ? new YamlParser : null
+export const YamlKey: MarkdownConfig = {
+  defineNodes: [
+    { name: "Yaml", block: true },
+    { name: "YamlKey", style: t.name },
+    { name: "YamlOperator", style: t.operator }
+  ],
+  parseBlock: [
+    {
+      name: "YamlParser",
+      endLeaf: () => {
+        return true;
+      },
+      leaf(_, leaf) {
+        const match = regex.exec(leaf.content);
+        if (match && match.length > 0) {
+          console.log(leaf);
+          return new YamlKeyParser(match);
         }
-    }]
-}
+        return null;
+      }
+    }
+  ]
+};

@@ -1,40 +1,40 @@
-import { EditorView } from "@codemirror/view"
-import { Extension } from "@codemirror/state"
-import { tags as t } from "@lezer/highlight"
-import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
+import { EditorView } from "@codemirror/view";
+import { Extension } from "@codemirror/state";
+import { tags as t } from "@lezer/highlight";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 
 // Colors from https://www.nordtheme.com/docs/colors-and-palettes
 // Polar Night
 const base00 = "#2e3440", // black
   base01 = "#3b4252", // dark grey
   base02 = "#434c5e",
-  base03 = "#4c566a" // grey
+  base03 = "#4c566a"; // grey
 
 // Snow Storm
 // const base04 = "#d8dee9", // grey
 const base05 = "#e5e9f0", // off white
-  base06 = "#eceff4" // white
+  base06 = "#eceff4"; // white
 
 // Frost
 const base07 = "#8fbcbb", // moss green
   base08 = "#88c0d0", // ice blue
   base09 = "#81a1c1", // water blue
-  base0A = "#5e81ac" // deep blue
+  base0A = "#5e81ac"; // deep blue
 
 // Aurora
 const base0b = "#bf616a", // red
   base0C = "#d08770", // orange
   base0D = "#ebcb8b", // yellow
   base0E = "#a3be8c", // green
-  base0F = "#b48ead" // purple
+  base0F = "#b48ead"; // purple
 
 const invalid = "#d30102",
   darkBackground = base06,
   highlightBackground = darkBackground,
-  background = "#ffffff",
+  background = "#f7f7f7",
   tooltipBackground = base01,
   selection = darkBackground,
-  cursor = base01
+  cursor = base01;
 
 /// The editor theme styles for Basic Light.
 export const basicLightTheme = EditorView.theme(
@@ -49,8 +49,9 @@ export const basicLightTheme = EditorView.theme(
     },
 
     ".cm-cursor, .cm-dropCursor": { borderLeftColor: cursor },
-    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
-      { backgroundColor: selection },
+    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": {
+      backgroundColor: selection
+    },
 
     ".cm-panels": { backgroundColor: darkBackground, color: base03 },
     ".cm-panels.cm-panels-top": { borderBottom: "2px solid black" },
@@ -111,7 +112,7 @@ export const basicLightTheme = EditorView.theme(
     }
   },
   { dark: false }
-)
+);
 
 /// The highlighting style for code in the Basic Light theme.
 export const basicLightHighlightStyle = HighlightStyle.define([
@@ -207,8 +208,11 @@ export const basicLightHighlightStyle = HighlightStyle.define([
     color: base0D
   },
   { tag: t.invalid, color: base02, borderBottom: `1px dotted ${invalid}` }
-])
+]);
 
 /// Extension to enable the Basic Light theme (both the editor theme and
 /// the highlight style).
-export const basicLight: Extension = [basicLightTheme, syntaxHighlighting(basicLightHighlightStyle)]
+export const basicLight: Extension = [
+  basicLightTheme,
+  syntaxHighlighting(basicLightHighlightStyle)
+];

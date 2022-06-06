@@ -8,6 +8,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
     "preact"
   ],
   "settings": {
@@ -28,15 +29,14 @@
       "error",
       {
         "selector": "interface",
-        "format": [
-          "PascalCase"
-        ],
+        "format": ["PascalCase"],
         "custom": {
           "regex": "^I[A-Z]",
           "match": true
-        },
-      },
+        }
+      }
     ],
+    "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
@@ -52,18 +52,12 @@
       {
         "avoidEscape": true,
         "allowTemplateLiterals": false
-      },
+      }
     ],
-    "curly": [
-      "error",
-      "all"
-    ],
+    "curly": ["error", "all"],
     "eqeqeq": "error",
     "react/react-in-jsx-scope": "off",
     "prefer-arrow-callback": "error",
-    "quotes": [
-      "error",
-      "double"
-    ]
+    "quotes": ["error", "double"]
   }
 }
