@@ -7,7 +7,6 @@ import { indentWithTab } from "@codemirror/commands";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 
 import { basicLight } from "./theme";
-import { YamlKey } from "./extension";
 
 type EditorProps = {
   value: string;
@@ -38,7 +37,7 @@ export function Editor(props: EditorProps) {
             addSpecialChars: /\s/
           })
         ),
-        markdown({ extensions: YamlKey, base: markdownLanguage }),
+        markdown({ base: markdownLanguage }),
         EditorView.updateListener.of((v: ViewUpdate) => {
           if (v.docChanged) {
             setValue(v.view.state.doc.toString());

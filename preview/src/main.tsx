@@ -1,8 +1,11 @@
 import { render } from "preact";
-import { Editor } from "../../src/index";
+import { Editor } from "../../src";
 import "./index.css";
 
-const value = `basic: >-
+import { parser } from "./parser/yaml";
+
+const value = `---
+basic: >-
   Emphasis, aka italics, with *asterisks* or _underscores_.
   Strong emphasis, aka bold, with **asterisks** or __underscores__.
   Combined emphasis with **asterisks and _underscores_**.
@@ -22,9 +25,12 @@ list: |-
     Note that this line is separate, but within the same paragraph.  
     (This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
 order: 1
-names:
-  - factor: some **factor**
-  - factor: some factor
-`;
+names: { factor: some **factor** }
+...`;
+
+const val = "---\nkey: value\n...";
+console.log(val);
+const pr = parser.parse(val);
+console.log(pr);
 
 render(<Editor value={value} />, document.getElementById("app") ?? document.body);
