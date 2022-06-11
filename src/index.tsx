@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 
-import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup";
-import { ViewUpdate, keymap, highlightSpecialChars } from "@codemirror/view";
+import { basicSetup } from "codemirror";
+import { EditorView, keymap, highlightSpecialChars, ViewUpdate } from "@codemirror/view";
 import { Prec } from "@codemirror/state";
 import { indentWithTab } from "@codemirror/commands";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
@@ -22,31 +22,29 @@ export function Editor(props: EditorProps) {
 
   useEffect(() => {
     new EditorView({
-      state: EditorState.create({
-        doc: props.value,
-        extensions: [
-          basicSetup,
-          basicLight,
-          keymap.of([indentWithTab]),
-          Prec.high(
-            highlightSpecialChars({
-              render: code => {
-                const node = document.createElement("span");
-                node.innerText = "∙";
-                node.setAttribute("class", "cm-special");
-                return node;
-              },
-              addSpecialChars: /\s/
-            })
-          ),
-          markdown({ extensions: YamlKey, base: markdownLanguage }),
-          EditorView.updateListener.of((v: ViewUpdate) => {
-            if (v.docChanged) {
-              setValue(v.view.state.doc.toString());
-            }
+      doc: props.value,
+      extensions: [
+        basicSetup,
+        basicLight,
+        keymap.of([indentWithTab]),
+        Prec.high(
+          highlightSpecialChars({
+            render: code => {
+              const node = document.createElement("span");
+              node.innerText = "∙";
+              node.setAttribute("class", "cm-special");
+              return node;
+            },
+            addSpecialChars: /\s/
           })
-        ]
-      }),
+        ),
+        markdown({ extensions: YamlKey, base: markdownLanguage }),
+        EditorView.updateListener.of((v: ViewUpdate) => {
+          if (v.docChanged) {
+            setValue(v.view.state.doc.toString());
+          }
+        })
+      ],
       parent: editor.current ?? document.body
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

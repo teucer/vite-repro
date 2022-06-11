@@ -1,0 +1,63 @@
+@top YamlText { document }
+
+@skip { space | newlineEmpty | Comment }
+
+document { DocStart statement+ DocEnd eof }
+
+statement { Key colon value newline }
+
+value { Scalar | MultiLine | Mapping | Sequence }
+
+Scalar { True | False | Null | Number | String }
+String { string }
+
+MultiLine { quote string multiline quote | Op newline multiline }
+
+@skip {} {
+  multiline { newline indent (string newline)+ dedent }
+}
+
+Mapping { "{" commaSep<Scalar>? "}" }
+
+Sequence { "[" commaSep<Scalar>? "]" }
+
+@context trackIndent from "./tokens.js"
+
+@external tokens indentation from "./tokens" { indent, dedent }
+
+@tokens {
+  DocStart { "---" }
+  DocEnd { "..." }
+  colon { ": " }
+  Op { "|" | ">" | "|-" | ">-" | "|+" | ">+" }
+
+  Key { keyChar (std.digit | keyChar)* }
+  keyChar { std.asciiLetter | "_" }
+
+  True { "true" }
+  False { "false" }
+  Null { "null" | "~" }
+
+  Number { "-"? (int | int? frac) exp? }
+  int { "0" | $[1-9] std.digit* }
+  frac { "." (std.digit+ | "nan" | "inf") }
+  exp { $[eE] $[+\-]? std.digit+ }
+
+  string { (!["\n\r] | "\\" _)+ }
+
+  quote { '"' }
+  Comment { "#" ![\n\r]* }
+  space { ($[ \t\f] | "\\" $[\n\r])+ }
+
+  "{" "}" "[" "]"
+
+  @precedence { Comment, True, False, Null, Number, colon, Op, string }
+}
+
+commaSep<expr> { expr ("," expr)* }
+
+@external tokens newlines from "./tokens" { newline, newlineEmpty, eof }
+
+@external propSource jsonHighlighting from "./highlight"
+
+@detectDelim
