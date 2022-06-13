@@ -1,41 +1,43 @@
-@top YamlText { document }
+@top Document { document }
 
 @skip { space | newlineEmpty | Comment }
 
-document { DocStart newline statement* DocEnd }
+document { DocStart newline property* DocEnd }
 
-statement { Key colon value newline }
+property { Key value newline }
 
 value { scalar | MultiLine | Mapping | Sequence }
 
-scalar { Boolean | Null | Number  | String }
+scalar { Boolean | Null | Number | String }
 String { plain | string }
 
-MultiLine { quote plain multiline quote | FoldOp newline multiline }
+MultiLine {
+  (quote lineSkip newline multiline quote) |
+  (FoldOp newline multiline)
+}
 
-@skip {} {
-  multiline { newline indent (plain newline)+ dedent }
+@skip { newlineEmpty } {
+  multiline { indent (lineSkip newline)+ dedent }
 }
 
 Mapping { "{" commaSep<scalar>? "}" }
 
 Sequence { "[" commaSep<scalar>? "]" }
 
-DocStart { @specialize<Key, "---" > }
-DocEnd { @specialize<Key, "..." > }
-FoldOp { @specialize<Key, "|" | ">" | "|-" | ">-" | "|+" | ">+" > }
-
-Boolean { @specialize<Key, "true" | "false" > }
-Null { @specialize<Key, "null" | "~" > }
+Boolean { @specialize<plain, "true" | "false" > }
+Null { @specialize<plain, "null" | "~" > }
 
 @context trackIndent from "./tokens.js"
 
 @external tokens indentation from "./tokens" { indent, dedent }
 
 @tokens {
+  DocStart { "---" }
+  DocEnd { "..." }
   colon { ": " }
-  
-  Key { keyChar (std.digit | keyChar)* }
+  FoldOp { $[|>] $[+\-]? }
+
+  Key { keyChar (std.digit | keyChar)* space? colon }
   keyChar { std.asciiLetter | "_" }
 
   Number { "-"? (int | int? frac) exp? }
@@ -43,8 +45,10 @@ Null { @specialize<Key, "null" | "~" > }
   frac { "." (std.digit+ | "nan" | "inf") }
   exp { $[eE] $[+\-]? std.digit+ }
 
-  string { quote (!["\n\r] | "\\" _)+ quote }
-  plain { ![{}\[\]&*#?|\-<>=!%@:" \t\f] (!["\n\r] | "\\" _)+ }
+  string { quote line quote }
+  plain { ![{}[\]&*#?|\-<>=!%@:" \t\f] line }
+  lineSkip { (!["\n\r] | "\\" _)+ }
+  line { (![#"\n\r] | "\\" _)+ }
 
   quote { '"' }
   Comment { "#" ![\n\r]* }
@@ -52,13 +56,15 @@ Null { @specialize<Key, "null" | "~" > }
 
   "{" "}" "[" "]"
 
-  @precedence { Comment, Key, Number, colon, plain }
+  @precedence { Number, plain }
+  @precedence { lineSkip, space }
+  @precedence { lineSkip, Comment }
 }
 
 commaSep<expr> { expr ("," expr)* }
 
 @external tokens newlines from "./tokens" { newline, newlineEmpty }
 
-@external propSource jsonHighlighting from "./highlight"
+@external propSource yamlHighlighting from "./highlight"
 
 @detectDelim

@@ -9,8 +9,7 @@ const newline = 10,
 
 export const newlines = new ExternalTokenizer(
   (input, stack) => {
-    if (input.next !== newline && input.next !== carriageReturn) {
-    } else {
+    if (input.next === newline || input.next === carriageReturn) {
       input.advance();
       let spaces = 0;
       while (input.next === space || input.next === tab) {
@@ -80,9 +79,11 @@ function countIndent(space) {
 
 export const trackIndent = new ContextTracker({
   start: topIndent,
+
   reduce(context) {
     return context.depth < 0 ? context.parent : context;
   },
+
   shift(context, term, stack, input) {
     if (term === indent) {
       return new IndentLevel(context, countIndent(input.read(input.pos, stack.pos)));
@@ -93,6 +94,7 @@ export const trackIndent = new ContextTracker({
 
     return context;
   },
+
   hash(context) {
     return context.hash;
   }

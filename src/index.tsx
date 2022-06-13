@@ -4,7 +4,9 @@ import { basicSetup } from "codemirror";
 import { EditorView, keymap, highlightSpecialChars, ViewUpdate } from "@codemirror/view";
 import { Prec } from "@codemirror/state";
 import { indentWithTab } from "@codemirror/commands";
-import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
+// import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
+import { yaml } from "./yamlmode";
+import { parser } from "./yaml";
 
 import { basicLight } from "./theme";
 
@@ -20,7 +22,7 @@ export function Editor(props: EditorProps) {
   // useEffect(() => console.log(value, editor.current), [value]);
 
   useEffect(() => {
-    new EditorView({
+    const view = new EditorView({
       doc: props.value,
       extensions: [
         basicSetup,
@@ -37,7 +39,7 @@ export function Editor(props: EditorProps) {
             addSpecialChars: /\s/
           })
         ),
-        markdown({ base: markdownLanguage }),
+        yaml(),
         EditorView.updateListener.of((v: ViewUpdate) => {
           if (v.docChanged) {
             setValue(v.view.state.doc.toString());
@@ -46,6 +48,14 @@ export function Editor(props: EditorProps) {
       ],
       parent: editor.current ?? document.body
     });
+    const tree = parser.parse(props.value);
+    const cursor = tree.cursor();
+    do {
+      if (cursor.name !== "Document") {
+        const val = view.state.sliceDoc(cursor.from, cursor.to);
+        console.log(`Node ${cursor.name} from ${cursor.from} to ${cursor.to}: ${val}`);
+      }
+    } while (cursor.next());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

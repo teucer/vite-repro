@@ -5,7 +5,7 @@ export const
   newline = 24,
   newlineEmpty = 25,
   Comment = 1,
-  YamlText = 2,
+  Document = 2,
   DocStart = 3,
   Key = 4,
   Boolean = 5,

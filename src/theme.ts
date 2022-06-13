@@ -7,7 +7,7 @@ import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 // Polar Night
 const base00 = "#2e3440", // black
   base01 = "#3b4252", // dark grey
-  base02 = "#434c5e",
+  base02 = "#999999", //"#434c5e",
   base03 = "#4c566a"; // grey
 
 // Snow Storm
